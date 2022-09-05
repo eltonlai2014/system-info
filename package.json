@@ -1,0 +1,21 @@
+{
+  "name": "system-info",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "browserify": "browserify ./index.js --no-bundle-external --node -o ./dist/bundle.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "log4js": "^6.6.1",
+    "pg": "^8.8.0",
+    "sequelize": "^6.21.4",
+    "systeminformation": "^5.12.6"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0"
+  }
+}

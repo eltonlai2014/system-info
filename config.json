@@ -1,0 +1,9 @@
+{
+  "db_ip": "127.0.0.1",
+  "db_port": 5432,
+  "db_user": "grafana",
+  "db_password": "grafana",
+	"db_name": "grafana",
+	"db_pool_max": 20,
+	"query_period": 20000
+}
