@@ -60,7 +60,8 @@ class MonitorDbHandler extends DatabaseHandler {
     async updateInfo(aInfo) {
         console.log(aInfo);
         let monitorInfo = {};
-        monitorInfo.host = "";
+        monitorInfo.host = aInfo.host;
+        monitorInfo.ip = aInfo.networkInterfaces[0].ip4;
         monitorInfo.sysUpTime = aInfo.time.uptime;
         monitorInfo.cpu = aInfo.cpu.currentLoad;
         monitorInfo.memory = aInfo.memory.used / aInfo.memory.total;

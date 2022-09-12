@@ -41,7 +41,22 @@ log4js.configure({
 
 const si = require('systeminformation');
 const os = require('os');
-const config = require('./config.json');
+
+// 讀取系統設定檔
+// const config = require('./config.json');
+let config = {};
+const configFile = path.join('./config.json').normalize();
+const hasFile = fs.existsSync(configFile);
+logger.info('load configFile', hasFile, configFile);
+if (hasFile) {
+    try {
+        const file = fs.readFileSync(configFile, 'utf8');
+        config = JSON.parse(file);
+        logger.info('config', config);
+    } catch (err) {
+        logger.error(err);
+    }
+}
 
 const getSystemInfo = () => {
     // 取得系統基本資訊 disk, memory, cpu
@@ -50,8 +65,9 @@ const getSystemInfo = () => {
         let taskList = [];
         let xList = [
             ['disk', si.fsSize()],
-            ['inetLatency', si.inetLatency('168.95.1.1')],
+            ['inetLatency', si.inetLatency(config.inet_target_host)],
             ['networkStats', si.networkStats()],
+            ['networkInterfaces', si.networkInterfaces()],            
             ['inetChecksite', si.inetChecksite('http://127.0.0.1:3000')],
             ['inetChecksite2', si.inetChecksite('http://www.google.com')],
             ['memory', si.mem()],
@@ -76,17 +92,18 @@ const getSystemInfo = () => {
     });
 }
 
-logger.info('config', config);
 const Database = require('./src/Database');
 const aDatabase = new Database();
 
 const mainLoop = async () => {
+    // 收集系統資訊，寫入 MonitorInfo
     let si = await getSystemInfo();
     // logger.info(si);
+    si.host = os.hostname();
     aDatabase.updateInfo(si);
 }
 
-
+// 資料庫連線
 aDatabase.connect(config.db_ip, config.db_port, config.db_user, config.db_password, config.db_name).then(() => {
     mainLoop();
     setInterval(function () {

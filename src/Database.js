@@ -2,6 +2,7 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('Database');
 const Sequelize = require('sequelize');
 const MonitorDbHandler = require('./MonitorDbHandler');
+// const pg = require('pg'); 
 
 class Database {
     constructor(options) {
@@ -58,6 +59,7 @@ class Database {
             // benchmark: true,
             logging: true,
             dialect: 'postgres',
+            // dialectModule: 'pg',
             host: ip,
             port: port,
             pool: {
@@ -67,40 +69,6 @@ class Database {
             },
         });
         return _connect();
-    }
-
-    findAndCountAll(dataType, where, params, options) {
-        options = options || {};
-        if (typeof this.dataHandlers[dataType] !== 'undefined') {
-            const findParams = this.dataHandlers[dataType].beforeFind(where, params);
-            logger.info('[' + dataType + ']', 'Query ' + JSON.stringify(findParams));
-            let res = [];
-            try {
-                res = this.dataHandlers[dataType].model.findAndCountAll(findParams);
-                if (res.length > 0) {
-                    // logger.trace('Data found in db. ');
-                    if (typeof this.dataHandlers[dataType].afterFind !== 'undefined') {
-                        res = this.dataHandlers[dataType].afterFind(res);
-                        // logger.info('['+dataType+']', 'afterFind ' + JSON.stringify(res));
-                    }
-                } else {
-                    logger.info('[' + dataType + ']', 'Data not found. ');
-                }
-            } catch (error) {
-                logger.error('dataHandlers[dataType].model.findAll error ', JSON.stringify(error));
-            }
-            return res;
-        }
-    }
-
-    count(dataType, where) {
-        if (typeof this.dataHandlers[dataType] !== 'undefined') {
-            return this.dataHandlers[dataType].model.findAndCountAll({
-                where: where,
-            });
-        } else {
-            return Promise.reject();
-        }
     }
 
     updateInfo(info) {
